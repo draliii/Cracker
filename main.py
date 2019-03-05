@@ -1,11 +1,14 @@
 import pickle as pkl
 from utils.text_analyzer import TextStats
+from crackers.mono import crack_mono
+from utils.dictionary import Dictionary
 
 
 def identify_ciphers(stats, dictionary):
-    print("IC of ciphertext is " + str(stats.ic) + " , IC of dictionary is " + str(dictionary[4]))
-    if (abs(stats.ic - dictionary[4])) < 0.2:
+    print("IC of ciphertext is " + str(stats.ic) + " , IC of dictionary is " + str(dictionary.ic))
+    if (abs(stats.ic - dictionary.ic)) < 0.4:
         print("Monoalphabetic substitution was likely used")
+        crack_mono(stats, dictionary)
     else:
         print("Monoalphabetic substitution was not used")
 
@@ -25,6 +28,5 @@ if __name__ == "__main__":
         dicts.append(d)
 
     stats = TextStats(ciphertext)
-    stats.compute_stats()
 
     identify_ciphers(stats, dicts[1])

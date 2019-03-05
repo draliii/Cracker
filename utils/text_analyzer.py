@@ -1,55 +1,74 @@
 import numpy as np
 
 
+def compute_score(text, dictionary):
+    stats = TextStats(text)
+
+    f_score = np.sum(np.multiply(stats.frequency, dictionary.frequency))
+    bi_score = np.sum(np.multiply(stats.bigrams, dictionary.bigrams))
+    tri_score = np.sum(np.multiply(stats.trigrams, dictionary.trigrams))
+
+    return f_score + bi_score + tri_score
+
+
 class TextStats():
     def __init__(self, text):
         self.text = text.replace(" ", "")
         self.N = len(self.text)
-        self.ic = None
-        self.histogram = None
-        self.frequency = None
 
-    def compute_histogram(self):
-        self.histogram = [0]*26
-        for t in self.text:
-            self.histogram[ord(t)-65] += 1
+        self.ic, self.histogram, self.frequency, self.bigrams, self.bigram_keys, self.trigrams,\
+        self.trigram_keys = compute_ngrams(self.text, self.N)
 
-    def compute_frequency(self):
-        self.frequency = np.divide(self.histogram, self.N)
 
-    def coincidence_index(self):
-        self.ic = 26*(np.sum(np.multiply(self.histogram, np.subtract(self.histogram, 1)))/(self.N * (self.N -1)))
+def compute_ngrams(text, N=None):
+    text = text.replace(" ", "")
 
-    def compute_stats(self):
-        self.compute_histogram()
-        self.compute_frequency()
-        self.coincidence_index()
+    if N is None:
+        N = len(text)
+
+    alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+                "U", "V", "W", "X", "Y", "Z"]
+    letters = []
+    bigrams = []
+    bigram_keys = []
+    trigrams = []
+    trigram_keys = []
+
+    for i in alphabet:
+        letters.append(0)
+        for j in alphabet:
+            bigrams.append(0)
+            bigram_keys.append(i + j)
+            for k in alphabet:
+                trigrams.append(0)
+                trigram_keys.append(i + j + k)
+
+    for i in range(0, N-3):
+        I = ord(text[i]) - 65
+        J = ord(text[i+1]) - 65
+        K = ord(text[i+2]) - 65
+
+        letters[I] += 1
+        bigrams[26*I + J] += 1
+        trigrams[26*26*I + 26*J + K] += 1
+
+    I = ord(text[N - 3]) - 65
+    J = ord(text[N - 2]) - 65
+    letters[I] += 1
+    letters[J] += 1
+    bigrams[26*I + J] += 1
+
+    ic = 26*np.sum(np.multiply(letters, np.subtract(letters, 1))) / (N * (N - 1))
+
+    frequency = np.divide(letters, N)
+    bigrams = np.divide(bigrams, N - 1)
+    trigrams = np.divide(trigrams, N - 2)
+
+    return ic, letters, frequency, bigrams, bigram_keys, trigrams, trigram_keys
 
 
 if __name__ == "__main__":
-    # texts = "FUBSWRJUDSKLF NHBV DUH DQDORJRXV WR WKH KRXVH DQG FDU NHBV ZH FDUUB LQ RXU GDLOB OLYHV DQG VHUYH D VLPLODU SXUSRVH",\
-    #         "VEH IYCFBYSYJO DEHCQB CUIIQWU JUNJ IXQBB RU SQBBUT FBQYD JUNJ QDT JXU UDSHOFJUT VEHC SYFXUH JUNJ",\
-    #         "ZFA KAQG ZI VA SGAH CNA IVZCYPAH TNIW C KAQ GISNOA EFYOF GADAOZG ZFAW BANFCBG NCPHIWDQ TNIW ZFA DCNMA GAZ IT CDD SGCVDA KAQG",\
-    #         "GLNTA JGZIB XQXQR BKQSQ GLKMQ RCMPK QMCZP XNRMD PSNFX SNGBZ BMCGL CMPKS RGMLZ SJJBE SIBXG QTQBE RMRPS LQCMP KKBQQ SDBGL RMZPX NRGZC MPK"
-    #
-    # for text in texts:
-    #     text = text.replace(" ", "")
-    #     stats = TextStats(text)
-    #     stats.compute_stats()
-    #
-    #     print(stats.ic)
-
-    f = open("/home/dita/ownCloud/Soutěže/Cracker/utils/en-robin-hood.txt")
-    line = f.readline()
-    line = line.replace(" ", "")
-    line = line[0:len(line)-1]
-    stats = TextStats(line)
-    stats.compute_stats()
-    print(stats.ic)
-
-
-    text = "QPWKALVRXCQZIKGRBPFAEOMFLJMSDZVDHXCXJYEBIMTRQWNMEAIZRVKCVKVLXNEICFZPZCZZHKMLVZVZIZRRQWDKECHOSNYXXLSPMYKVQXJTDCIOMEEXDQVSRXLRLKZHOV"
+    text = "QPWKALVRXCQZIKGRBPFAEOMFLJMSDZVDHXCXJYEBIMTRQWNMEAIZRVKCVKVLXNEICFZPZCZZHKMLVZVZIZRRQWDKECH"
     stats = TextStats(text)
-    stats.compute_stats()
     print(stats.ic)
 
