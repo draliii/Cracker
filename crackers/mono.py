@@ -59,7 +59,7 @@ def crack_mono(stats: TextStats, dictionary: Dictionary, final_round: bool=True,
 def rot(ciphertext: str, shift: int):
     plaintext = ""
     for c in ciphertext:
-        cl = shift_letter(c, shift)
+        cl = shift_letter(c, -shift)
         plaintext += cl
     return plaintext
 

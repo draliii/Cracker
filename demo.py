@@ -81,7 +81,7 @@ def demo7(dictionary: Dictionary):
     transposed_text, method, parameters = crack_transposition(stats, dictionary)
     transposed_stats = TextStats(transposed_text)
 
-    plaintext = crack_vigenere(transposed_stats, dictionary, key_limit=7)
+    plaintext, method, parameters = crack_vigenere(transposed_stats, dictionary, key_limit=7)
     return plaintext
 
 
