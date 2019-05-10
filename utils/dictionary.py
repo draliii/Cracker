@@ -23,8 +23,7 @@ class Dictionary:
             text = words.replace(" ", "")
             N = len(text)
 
-            self.ic, self.histogram, self.frequency, self.bigrams, self.bigram_keys, self.trigrams, self.trigram_keys\
-                = compute_ngrams(text, N)
+            self.ic, self.histogram, self.frequency, self.bigrams, self.bigram_keys, self.trigrams, self.trigram_keys = compute_ngrams(text, N)
 
     def save(self, file):
         pkl.dump(self, open(file, "wb"))

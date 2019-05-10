@@ -1,12 +1,18 @@
 import numpy as np
 
 
-def compute_score(text, dictionary):
+def compute_score(text, dictionary, f=True, bi=True, tri=True):
     stats = TextStats(text)
+    f_score = 0
+    bi_score = 0
+    tri_score = 0
 
-    f_score = np.sum(np.multiply(stats.frequency, dictionary.frequency))
-    bi_score = np.sum(np.multiply(stats.bigrams, dictionary.bigrams))
-    tri_score = np.sum(np.multiply(stats.trigrams, dictionary.trigrams))
+    if f:
+        f_score = np.sum(np.multiply(stats.frequency, dictionary.frequency))
+    if bi:
+        bi_score = np.sum(np.multiply(stats.bigrams, dictionary.bigrams))
+    if tri:
+        tri_score = np.sum(np.multiply(stats.trigrams, dictionary.trigrams))
 
     return f_score + bi_score + tri_score
 

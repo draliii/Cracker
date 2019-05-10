@@ -1,4 +1,5 @@
 from utils.text_analyzer import compute_score
+import random
 
 
 def crack_mono(stats, dictionary):
@@ -24,7 +25,13 @@ def crack_mono(stats, dictionary):
             solutions.append((score, solution, "affine"+str(a)+","+str(b)))
 
     solutions.sort(key=lambda solution: solution[0], reverse=True)
-    print(solutions[0][1])
+    for i in range(0, 10):
+        print(solutions[i][2], solutions[i][1])
+
+    print(" --- starting brute force --- ")
+
+    # brute force
+    # print(brute_force(stats, dictionary))
 
 
 def rot(cyphertext, shift):
@@ -56,3 +63,54 @@ def shift_letter(c, shift):
     letter_pos = ord(c) - 65
     letter_pos = ((letter_pos + shift) % 26) + 65
     return chr(letter_pos)
+
+
+def brute_force(stats, dictionary):
+    stats_ids = sorted(range(len(stats.frequency)), key=stats.frequency.__getitem__)
+    dict_ids = sorted(range(len(dictionary.frequency)), key=dictionary.frequency.__getitem__)
+
+    # align frequently used letters together
+    table = [-1] * 26
+    for i in range(0, 26):
+        table[stats_ids[i]] = dict_ids[i]
+
+    cleartext = use_table(stats.text, table)
+    score = compute_score(cleartext, dictionary)
+
+    stable = 0
+    while True:
+
+        i = random.randint(0, 25)
+        j = random.randint(0, 25)
+
+        if i == j:
+            continue
+
+        new_table = table.copy()
+        new_table[i] = table[j]
+        new_table[j] = table[i]
+
+        new_text = use_table(stats.text, new_table)
+        new_score = compute_score(new_text, dictionary)
+
+        if new_score > score:
+            print(new_text, new_score)
+            stable = 0
+            table = new_table
+            score = new_score
+        else:
+            stable += 1
+            if stable > 1000000:
+                break
+
+    print(" --- brute force ended --- ")
+    return new_text
+
+
+def use_table(text, table):
+    cleartext = ""
+    for c in text:
+        letter_pos = ord(c) - 65
+        cleartext += chr(table[letter_pos] + 65)
+    return cleartext
+
