@@ -1,6 +1,5 @@
 import pickle as pkl
 import numpy as np
-from utils.text_analyzer import compute_ngrams
 
 
 class Dictionary:
@@ -27,6 +26,53 @@ class Dictionary:
 
     def save(self, file):
         pkl.dump(self, open(file, "wb"))
+
+
+def compute_ngrams(text, N=None):
+    text = text.replace(" ", "")
+
+    if N is None:
+        N = len(text)
+
+    alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+                "U", "V", "W", "X", "Y", "Z"]
+    letters = []
+    bigrams = []
+    bigram_keys = []
+    trigrams = []
+    trigram_keys = []
+
+    for i in alphabet:
+        letters.append(0)
+        for j in alphabet:
+            bigrams.append(0)
+            bigram_keys.append(i + j)
+            for k in alphabet:
+                trigrams.append(0)
+                trigram_keys.append(i + j + k)
+
+    for i in range(0, N-3):
+        I = ord(text[i]) - 65
+        J = ord(text[i+1]) - 65
+        K = ord(text[i+2]) - 65
+
+        letters[I] += 1
+        bigrams[26*I + J] += 1
+        trigrams[26*26*I + 26*J + K] += 1
+
+    I = ord(text[N - 3]) - 65
+    J = ord(text[N - 2]) - 65
+    letters[I] += 1
+    letters[J] += 1
+    bigrams[26*I + J] += 1
+
+    ic = 26*np.sum(np.multiply(letters, np.subtract(letters, 1))) / (N * (N - 1))
+
+    frequency = np.divide(letters, N)
+    bigrams = np.divide(bigrams, N - 1)
+    trigrams = np.divide(trigrams, N - 2)
+
+    return ic, letters, frequency, bigrams, bigram_keys, trigrams, trigram_keys
 
 
 if __name__ == "__main__":

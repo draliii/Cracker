@@ -1,20 +1,29 @@
 import numpy as np
+from utils.dictionary import compute_ngrams
 
 
-def compute_score(text, dictionary, f=True, bi=True, tri=True):
+def compute_score(text: str, dictionary, f=1, bi=1, tri=1):
     stats = TextStats(text)
     f_score = 0
     bi_score = 0
     tri_score = 0
 
-    if f:
+    if f > 0:
         f_score = np.sum(np.multiply(stats.frequency, dictionary.frequency))
-    if bi:
+    if bi > 0:
         bi_score = np.sum(np.multiply(stats.bigrams, dictionary.bigrams))
-    if tri:
+    if tri > 0:
         tri_score = np.sum(np.multiply(stats.trigrams, dictionary.trigrams))
 
-    return f_score + bi_score + tri_score
+    return f*f_score + bi*bi_score + tri*tri_score
+
+
+def compute_score_for_table(table: list, ciphertext: str, dictionary, f=1, bi=1, tri=1):
+    text = ""
+    for c in ciphertext:
+        text += chr(table[ord(c) - 65] + 65)
+
+    return compute_score(text, dictionary, f, bi, tri), text
 
 
 class TextStats():
@@ -26,51 +35,14 @@ class TextStats():
         self.trigram_keys = compute_ngrams(self.text, self.N)
 
 
-def compute_ngrams(text, N=None):
-    text = text.replace(" ", "")
-
-    if N is None:
-        N = len(text)
-
-    alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
-                "U", "V", "W", "X", "Y", "Z"]
-    letters = []
-    bigrams = []
-    bigram_keys = []
-    trigrams = []
-    trigram_keys = []
-
-    for i in alphabet:
-        letters.append(0)
-        for j in alphabet:
-            bigrams.append(0)
-            bigram_keys.append(i + j)
-            for k in alphabet:
-                trigrams.append(0)
-                trigram_keys.append(i + j + k)
-
-    for i in range(0, N-3):
-        I = ord(text[i]) - 65
-        J = ord(text[i+1]) - 65
-        K = ord(text[i+2]) - 65
-
-        letters[I] += 1
-        bigrams[26*I + J] += 1
-        trigrams[26*26*I + 26*J + K] += 1
-
-    I = ord(text[N - 3]) - 65
-    J = ord(text[N - 2]) - 65
-    letters[I] += 1
-    letters[J] += 1
-    bigrams[26*I + J] += 1
-
-    ic = 26*np.sum(np.multiply(letters, np.subtract(letters, 1))) / (N * (N - 1))
-
-    frequency = np.divide(letters, N)
-    bigrams = np.divide(bigrams, N - 1)
-    trigrams = np.divide(trigrams, N - 2)
-
-    return ic, letters, frequency, bigrams, bigram_keys, trigrams, trigram_keys
+def add_spaces(text):
+    result = ""
+    lst = list(text)
+    for i in range(0, len(lst)):
+        if not i % 5:
+            result += " "
+        result += lst[i]
+    return result
 
 
 if __name__ == "__main__":

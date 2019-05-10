@@ -71,7 +71,6 @@ def solve_manually(stats: TextStats, dictionary: Dictionary):
         plt.draw()
         plt.pause(0.001)
         print("Ciphertext:", stats.text)
-        print("Message is:", tmp)
         print("Message is:", new_stats.text)
         print("Password is:", password)
 

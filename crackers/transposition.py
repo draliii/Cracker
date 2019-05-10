@@ -3,6 +3,7 @@ import pickle as pkl
 from utils.text_analyzer import TextStats
 from utils.text_analyzer import compute_score
 from utils.dictionary import Dictionary
+from itertools import permutations as permutations
 
 
 def crack_transposition(stats: TextStats, dictionary):
@@ -23,9 +24,52 @@ def crack_transposition(stats: TextStats, dictionary):
             language_score = compute_score(solution, dictionary)
             solutions.append((tail_score, language_score, solution, "auto"+str(size)))
 
+    solutions.sort(key=lambda solution: solution[1], reverse=True)
     solutions.sort(key=lambda solution: solution[0], reverse=True)
     for i in range(0, len(solutions)):
         print(solutions[i][0], solutions[i][3], solutions[i][2])
+    return solutions[0][2]
+
+
+def read_from_table(stats: TextStats, table_width):
+    m = int(stats.N/table_width)
+    f = np.array(list(stats.text))
+    cipher_table = np.transpose(np.reshape(f, (m, table_width)))
+    # print(cipher_table)
+    table = np.reshape(cipher_table, (1, stats.N)).tolist()
+    return "".join(table[0])
+
+
+def crack_transposition_with_column_scrambling(stats: TextStats, dictionary):
+    solutions = []
+
+    for size in range(2, stats.N):
+        if not stats.N % size:
+            n_cols = int(stats.N / size)
+            if n_cols > 7:
+                print("Can't guess with table size", size, "- too many column permutations, skipping")
+                continue
+            from math import factorial
+            print(n_cols, factorial(n_cols))
+
+            cipher_table = generate_table(stats, size)
+            for permutation in permutations(list(range(0, n_cols))):
+                shuffled_table = cipher_table[:,permutation]
+                table = np.reshape(shuffled_table, (1, stats.N)).tolist()
+                solution = "".join(table[0])
+                language_score = compute_score(solution, dictionary)
+                solutions.append((language_score, solution, size, n_cols, permutation))
+
+    solutions.sort(key=lambda solution: solution[0], reverse=True)
+    for i in range(0, min(len(solutions), 50)):
+        print(solutions[i][0], solutions[i][1], solutions[i][2], solutions[i][3], solutions[i][4])
+
+
+def generate_table(stats: TextStats, table_width):
+    m = int(stats.N/table_width)
+    f = np.array(list(stats.text))
+    cipher_table = np.transpose(np.reshape(f, (m, table_width)))
+    return cipher_table
 
 
 def guess_table_size(text: TextStats, filler:int="X"):
@@ -66,15 +110,6 @@ def count_tailing_letters(text: str):
         if text[-i] != last_char:
             break
     return i-1
-
-
-def read_from_table(stats: TextStats, table_width):
-    m = int(stats.N/table_width)
-    f = np.array(list(stats.text))
-    cipher_table = np.transpose(np.reshape(f, (m, table_width)))
-    # print(cipher_table)
-    table = np.reshape(cipher_table, (1, stats.N)).tolist()
-    return "".join(table[0])
 
 
 if __name__ == "__main__":
