@@ -13,7 +13,7 @@ def demo1(dictionary: Dictionary):
                  "KFAXK CLMFS KOLSD HMFJL SOKFJ STSBL MXS"
     stats = TextStats(ciphertext)
 
-    plaintext = crack_mono(stats, dictionary)
+    plaintext, method, parameters = crack_mono(stats, dictionary)
     return plaintext
 
 
@@ -24,7 +24,7 @@ def demo2(dictionary: Dictionary):
                  "JQQJI MFLQQ MIUPJ"
     stats = TextStats(ciphertext)
 
-    plaintext = solve_manually(stats, dictionary)
+    plaintext, method, parameters = solve_manually(stats, dictionary)
     return plaintext
 
 
@@ -43,7 +43,7 @@ def demo4(dictionary: Dictionary):
                  "LRWOT BANTI NNEVH EEVYS WIHDE LASRA IIIAA BNTEO EOEFN UTAIL AOLSS LDHRU"
     stats = TextStats(ciphertext)
 
-    plaintext = crack_transposition_with_column_scrambling(stats, dictionary)
+    plaintext, method, parameters = crack_transposition_with_column_scrambling(stats, dictionary)
     return plaintext
 
 
@@ -52,10 +52,10 @@ def demo5(dictionary: Dictionary):
                  "AEIWJ EMXIP VSEXM XMZWC WXOYW MREZI IYSLI WWRXX IRRRJ SXFXC LIXYI MEYAI MTIW"
     stats = TextStats(ciphertext)
 
-    scrambled_text = crack_mono(stats, dictionary, final_round=False)
+    scrambled_text, method, parameters = crack_mono(stats, dictionary, final_round=False)
 
     scrambled_stats = TextStats(scrambled_text)
-    plaintext = crack_transposition(scrambled_stats, dictionary)
+    plaintext, method, parameters = crack_transposition(scrambled_stats, dictionary)
     return plaintext
 
 
@@ -65,10 +65,10 @@ def demo6(dictionary: Dictionary):
                  "LVQVA GWOJF GFSGW RYGVJ VX"
     stats = TextStats(ciphertext)
 
-    scrambled_text = crack_mono(stats, dictionary, final_round=False)
+    scrambled_text, method, parameters = crack_mono(stats, dictionary, final_round=False)
 
     scrambled_stats = TextStats(scrambled_text)
-    plaintext = crack_transposition_with_column_scrambling(scrambled_stats, dictionary)
+    plaintext, method, parameters = crack_transposition_with_column_scrambling(scrambled_stats, dictionary)
     return plaintext
 
 
@@ -78,7 +78,7 @@ def demo7(dictionary: Dictionary):
                  "HIHEI NONJO MAHMR XUTKV ZTSJG VUJNK RXLEF OIACF PERVE NDXLA WZMUW CIVMM TBEXG FEGFR NEARJ ECNNX"
     stats = TextStats(ciphertext)
 
-    transposed_text = crack_transposition(stats, dictionary)
+    transposed_text, method, parameters = crack_transposition(stats, dictionary)
     transposed_stats = TextStats(transposed_text)
 
     plaintext = crack_vigenere(transposed_stats, dictionary, key_limit=7)

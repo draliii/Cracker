@@ -6,32 +6,49 @@ from itertools import permutations as permutations
 
 
 def crack_transposition(stats: TextStats, dictionary: Dictionary, verbose: bool=False):
+    """
+    Method to crack table transpositions. It assumes that ciphertext was obtained by writing plaintext to rows of given
+    size and then read by columns. If there are empty spaces in the table, they are filled by fake letters. This cracker
+    identifies the correct plaintext by counting identical letters at it's end, and by comparing it to the dictionary.
+    All possible table sizes are evaluated, as it doesn't take much time and size detection function that was used to
+    get one table size can be confused if the filler uses random characters instead of all Xs.
+    :param stats: TextStats object of the text to be cracked
+    :param dictionary: Dictionary constructed from the language of the plaintext
+    :param verbose: True to print some outputs, eg other candidates for plaintext
+    :return: plaintext, cipher name ("transposition_table"), parameters (table height)
+    """
     solutions = []
 
-    """
-    likely_size = guess_table_size(stats)
-    if likely_size:
-        solution = read_from_table(stats, likely_size)
-        language_score = compute_score(solution, dictionary)
-        solutions.append((language_score, solution, "guessed"+str(likely_size)))
-    """
+    # this doesn't work all that well, and it is found later on anyway
+    #    likely_size = guess_table_size(stats)
+    # if likely_size:
+    #    solution = read_from_table(stats, likely_size)
+    #    language_score = compute_score(solution, dictionary)
+    #    solutions.append((language_score, solution, "guessed"+str(likely_size)))
 
+    # try all possible table dimensions
     for size in range(2, stats.N):
+        # table size must be divisible by the dimensions
         if not stats.N % size:
             solution = read_from_table(stats, size)
+            # how many characters repeat at the end of the plaintext
             tail_score = count_tailing_letters(solution)
             language_score = compute_score(solution, dictionary)
-            solutions.append((tail_score, language_score, solution, "auto"+str(size)))
+            solutions.append((tail_score, language_score, solution, "transposition_table", [size]))
 
-    solutions.sort(key=lambda solution: solution[1], reverse=True)
-    solutions.sort(key=lambda solution: solution[0], reverse=True)
+    # sort by language, but use tail_score for primary sorting
+    solutions.sort(key=lambda s: s[1], reverse=True)
+    solutions.sort(key=lambda s: s[0], reverse=True)
+
     if verbose:
         for i in range(0, len(solutions)):
             print(solutions[i][0], solutions[i][3], solutions[i][2])
-    return solutions[0][2]
+
+    return solutions[0][2], solutions[0][3], solutions[0][4]
 
 
 def read_from_table(stats: TextStats, table_width: int):
+    # take the string from stats, feed it to an array and then read it along different axis to get plaintext
     m = int(stats.N/table_width)
     f = np.array(list(stats.text))
     cipher_table = np.transpose(np.reshape(f, (m, table_width)))
@@ -40,8 +57,17 @@ def read_from_table(stats: TextStats, table_width: int):
 
 
 def crack_transposition_with_column_scrambling(stats: TextStats, dictionary: Dictionary, verbose: bool=False):
+    """
+    Method to crack table transpositions with column shuffling. The cipher is the same as table transposition above, but
+    the columns are shuffled before message is read. The method will try all permutations of columns for tables with 7
+    or less columns. Larger tables are skipped, because it would take ages to compute.
+    :param stats: TextStats object of the text to be cracked
+    :param dictionary: Dictionary constructed from the language of the plaintext
+    :param verbose: True to print some outputs, eg other candidates for plaintext
+    :return: plaintext, cipher name ("transposition_table_shuffled"), parameters: [table height, permutation]
+    """
     solutions = []
-
+    size = 2
     for size in range(2, stats.N):
         if not stats.N % size:
             n_cols = int(stats.N / size)
@@ -53,20 +79,23 @@ def crack_transposition_with_column_scrambling(stats: TextStats, dictionary: Dic
             if verbose:
                 print(n_cols, factorial(n_cols))
 
+            # prepare a table to be shuffled
             cipher_table = generate_table(stats, size)
+            # create permutations of [0, 1, ..., n_cols]
             for permutation in permutations(list(range(0, n_cols))):
-                shuffled_table = cipher_table[:,permutation]
+                # apply permutation and read message
+                shuffled_table = cipher_table[:, permutation]
                 table = np.reshape(shuffled_table, (1, stats.N)).tolist()
                 solution = "".join(table[0])
                 language_score = compute_score(solution, dictionary)
-                solutions.append((language_score, solution, size, n_cols, permutation))
+                solutions.append((language_score, solution, size, permutation))
 
-    solutions.sort(key=lambda solution: solution[0], reverse=True)
+    solutions.sort(key=lambda s: s[0], reverse=True)
     if verbose:
         for i in range(0, min(len(solutions), 50)):
-            print(solutions[i][0], solutions[i][1], solutions[i][2], solutions[i][3], solutions[i][4])
+            print(solutions[i][0], solutions[i][1], solutions[i][2], solutions[i][3])
 
-    return solutions[0][1]
+    return solutions[0][1], "transposition_table_shuffled", [size, solutions[0][3]]
 
 
 def generate_table(stats: TextStats, table_width: int):
@@ -78,7 +107,7 @@ def generate_table(stats: TextStats, table_width: int):
 
 def guess_table_size(text: TextStats, filler: int="X"):
     """
-    Finds how often filler characters appear. This can be used to detect table size
+    Finds how often filler characters appear. This can be used to detect table size, but turned out to be useless.
     :param text: ciphertext
     :param filler: character to work with
     :return: Likely table size
