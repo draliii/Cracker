@@ -6,10 +6,11 @@ from utils.dictionary import Dictionary
 from crackers.mono import rot
 
 
-def crack_vigenere(stats: TextStats, dictionary: Dictionary, n_best: int = 3, key_limit: int = 10):
+def crack_vigenere(stats: TextStats, dictionary: Dictionary, n_best: int=3, key_limit: int=10, verbose: bool=False):
     output_texts = []
     for key_len in range(2, key_limit):
-        print(key_len)
+        if verbose:
+            print(key_len)
         filler_size = stats.N % key_len
         if filler_size:
             text = stats.text[0:-filler_size]
@@ -57,7 +58,8 @@ def crack_vigenere(stats: TextStats, dictionary: Dictionary, n_best: int = 3, ke
 
         output_texts_for_keylen.sort(key=lambda c: c[0], reverse=True)
         for i in range(0, n_best):
-            print(output_texts_for_keylen[i])
+            if verbose:
+                print(output_texts_for_keylen[i])
             output_texts.append(output_texts_for_keylen[i])
 
     output_texts.sort(key=lambda c: c[0], reverse=True)

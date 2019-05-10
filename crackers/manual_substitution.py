@@ -33,12 +33,27 @@ def solve_manually(stats: TextStats, dictionary: Dictionary):
             solve = False
             continue
         if answer == "1":
-            password.pop()
-            last_stable_pos = table.index(ord(password[-1]) - 65)
+            if len(password) >= 1:
+                password.pop()
+                if len(password) >= 1:
+                    last_stable_pos = table.index(ord(password[-1]) - 65)
+                else:
+                    last_stable_pos = 26
+            else:
+                print("Can't undo any further")
             continue
         if answer == "2":
             solve = False
             swap_password = True
+            continue
+        if len(answer) != 1:
+            print("Invalid input")
+            continue
+        if not (64 < ord(answer) < 123):
+            print("Invalid input")
+            continue
+        if answer.upper() in password:
+            print("This letter already is in the password")
             continue
         password.append(answer.upper())
         last_stable_pos = table.index(ord(password[-1]) - 65)
@@ -46,7 +61,7 @@ def solve_manually(stats: TextStats, dictionary: Dictionary):
     while swap_password:
         input_letters = input("Type two password letters to swap, 0 to quit\n").split(" ")
         if input_letters == ["0"]:
-            return
+            break
         try:
             a, b = list(map(lambda x: x.upper(), input_letters))
             a_idx = password.index(a)
@@ -73,6 +88,8 @@ def solve_manually(stats: TextStats, dictionary: Dictionary):
         print("Ciphertext:", stats.text)
         print("Message is:", new_stats.text)
         print("Password is:", password)
+
+    return new_stats.text
 
 
 def get_new_stats(stats: TextStats, password: list, last_stable_pos = None):

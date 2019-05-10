@@ -14,6 +14,7 @@ def demo1(dictionary):
     stats = TextStats(ciphertext)
 
     plaintext = crack_mono(stats, dictionary)
+    return plaintext
 
 
 def demo2(dictionary):
@@ -24,6 +25,7 @@ def demo2(dictionary):
     stats = TextStats(ciphertext)
 
     plaintext = solve_manually(stats, dictionary)
+    return plaintext
 
 
 def demo3(dictionary):
@@ -33,6 +35,7 @@ def demo3(dictionary):
     stats = TextStats(ciphertext)
 
     plaintext = crack_vigenere(stats, dictionary)
+    return plaintext
 
 
 def demo4(dictionary):
@@ -41,6 +44,7 @@ def demo4(dictionary):
     stats = TextStats(ciphertext)
 
     plaintext = crack_transposition_with_column_scrambling(stats, dictionary)
+    return plaintext
 
 
 def demo5(dictionary):
@@ -52,6 +56,7 @@ def demo5(dictionary):
 
     scrambled_stats = TextStats(scrambled_text)
     plaintext = crack_transposition(scrambled_stats, dictionary)
+    return plaintext
 
 
 def demo6(dictionary):
@@ -64,6 +69,7 @@ def demo6(dictionary):
 
     scrambled_stats = TextStats(scrambled_text)
     plaintext = crack_transposition_with_column_scrambling(scrambled_stats, dictionary)
+    return plaintext
 
 
 def demo7(dictionary):
@@ -76,17 +82,18 @@ def demo7(dictionary):
     transposed_stats = TextStats(transposed_text)
 
     plaintext = crack_vigenere(transposed_stats, dictionary, key_limit=7)
+    return plaintext
 
 
 def demo():
     dictionary = pkl.load(open("/home/dita/ownCloud/Soutěže/Cracker/utils/en.pkl", "rb"))
-    demo1(dictionary)
-    demo2(dictionary)
-    demo3(dictionary)
-    demo4(dictionary)
-    demo5(dictionary)
-    demo6(dictionary)
-    demo7(dictionary)
+    print(demo1(dictionary))
+    print(demo2(dictionary))
+    print(demo3(dictionary))
+    print(demo4(dictionary))
+    print(demo5(dictionary))
+    print(demo6(dictionary))
+    print(demo7(dictionary))
 
 
 

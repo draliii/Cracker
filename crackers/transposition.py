@@ -6,7 +6,7 @@ from utils.dictionary import Dictionary
 from itertools import permutations as permutations
 
 
-def crack_transposition(stats: TextStats, dictionary):
+def crack_transposition(stats: TextStats, dictionary, verbose: bool=False):
     solutions = []
 
     """
@@ -26,8 +26,9 @@ def crack_transposition(stats: TextStats, dictionary):
 
     solutions.sort(key=lambda solution: solution[1], reverse=True)
     solutions.sort(key=lambda solution: solution[0], reverse=True)
-    for i in range(0, len(solutions)):
-        print(solutions[i][0], solutions[i][3], solutions[i][2])
+    if verbose:
+        for i in range(0, len(solutions)):
+            print(solutions[i][0], solutions[i][3], solutions[i][2])
     return solutions[0][2]
 
 
@@ -35,22 +36,23 @@ def read_from_table(stats: TextStats, table_width):
     m = int(stats.N/table_width)
     f = np.array(list(stats.text))
     cipher_table = np.transpose(np.reshape(f, (m, table_width)))
-    # print(cipher_table)
     table = np.reshape(cipher_table, (1, stats.N)).tolist()
     return "".join(table[0])
 
 
-def crack_transposition_with_column_scrambling(stats: TextStats, dictionary):
+def crack_transposition_with_column_scrambling(stats: TextStats, dictionary, verbose: bool=False):
     solutions = []
 
     for size in range(2, stats.N):
         if not stats.N % size:
             n_cols = int(stats.N / size)
             if n_cols > 7:
-                print("Can't guess with table size", size, "- too many column permutations, skipping")
+                if verbose:
+                    print("Can't guess with table size", size, "- too many column permutations, skipping")
                 continue
             from math import factorial
-            print(n_cols, factorial(n_cols))
+            if verbose:
+                print(n_cols, factorial(n_cols))
 
             cipher_table = generate_table(stats, size)
             for permutation in permutations(list(range(0, n_cols))):
@@ -61,8 +63,11 @@ def crack_transposition_with_column_scrambling(stats: TextStats, dictionary):
                 solutions.append((language_score, solution, size, n_cols, permutation))
 
     solutions.sort(key=lambda solution: solution[0], reverse=True)
-    for i in range(0, min(len(solutions), 50)):
-        print(solutions[i][0], solutions[i][1], solutions[i][2], solutions[i][3], solutions[i][4])
+    if verbose:
+        for i in range(0, min(len(solutions), 50)):
+            print(solutions[i][0], solutions[i][1], solutions[i][2], solutions[i][3], solutions[i][4])
+
+    return solutions[0][1]
 
 
 def generate_table(stats: TextStats, table_width):

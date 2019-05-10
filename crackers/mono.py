@@ -2,7 +2,7 @@ from utils.text_analyzer import compute_score
 import random
 
 
-def crack_mono(stats, dictionary, final_round=True):
+def crack_mono(stats, dictionary, final_round=True, verbose=False):
     solutions = []
     if final_round:
         f = 1
@@ -13,7 +13,7 @@ def crack_mono(stats, dictionary, final_round=True):
         bi = 0
         tri = 0
 
-    # rot/ceasar
+    # rot/caesar
     for shift in range(1, 26):
         solution = rot(stats.text, shift)
         # print(solution)
@@ -33,40 +33,36 @@ def crack_mono(stats, dictionary, final_round=True):
             solutions.append((score, solution, "affine"+str(a)+","+str(b)))
 
     solutions.sort(key=lambda solution: solution[0], reverse=True)
-    for i in range(0, 10):
-        print(solutions[i][0], solutions[i][2], solutions[i][1])
+    if verbose:
+        for i in range(0, 10):
+            print(solutions[i][0], solutions[i][2], solutions[i][1])
 
     return solutions[0][1]
 
-    # print(" --- starting brute force --- ")
 
-    # brute force
-    # print(brute_force(stats, dictionary, f, bi, tri))
-
-
-def rot(cyphertext, shift):
-    cleartext = ""
-    for c in cyphertext:
+def rot(ciphertext, shift):
+    plaintext = ""
+    for c in ciphertext:
         cl = shift_letter(c, shift)
-        cleartext += cl
-    return cleartext
+        plaintext += cl
+    return plaintext
 
 
 def flip_substitution(cyphertext):
-    cleartext = ""
+    plaintext = ""
     for c in cyphertext:
         letter_pos = ord(c) - 65
         letter_pos = abs(letter_pos - 25) + 65
-        cleartext += chr(letter_pos)
-    return cleartext
+        plaintext += chr(letter_pos)
+    return plaintext
 
 
-def affine(cyphertext, a_inv, b):
-    cleartext = ""
-    for c in cyphertext:
+def affine(ciphertext, a_inv, b):
+    plaintext = ""
+    for c in ciphertext:
         cl = chr((a_inv*(ord(c)-65-b) % 26) + 65)
-        cleartext += cl
-    return cleartext
+        plaintext += cl
+    return plaintext
 
 
 def shift_letter(c, shift):
@@ -84,8 +80,8 @@ def brute_force(stats, dictionary, f, bi, tri):
     for i in range(0, 26):
         table[stats_ids[i]] = dict_ids[i]
 
-    cleartext = use_table(stats.text, table)
-    score = compute_score(cleartext, dictionary, f, bi, tri)
+    plaintext = use_table(stats.text, table)
+    score = compute_score(plaintext, dictionary, f, bi, tri)
 
     stable = 0
     while True:
@@ -113,14 +109,13 @@ def brute_force(stats, dictionary, f, bi, tri):
             if stable > 1000000:
                 break
 
-    print(" --- brute force ended --- ")
     return new_text
 
 
 def use_table(text, table):
-    cleartext = ""
+    plaintext = ""
     for c in text:
         letter_pos = ord(c) - 65
-        cleartext += chr(table[letter_pos] + 65)
-    return cleartext
+        plaintext += chr(table[letter_pos] + 65)
+    return plaintext
 
