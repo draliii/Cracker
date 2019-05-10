@@ -1,10 +1,22 @@
 from utils.dictionary import Dictionary
 from utils.text_analyzer import compute_score, TextStats
-import random
 
 
 def crack_mono(stats: TextStats, dictionary: Dictionary, final_round: bool=True, verbose: bool=False):
+    """
+    Method to crack the easiest monoalphabetic ciphers: ROT (Caesar's), Affine cipher, mirror flip. All ciphers with all
+    parameters are generated, their outputs are compared to the given dictionary and sorted by likelihood. The best
+    result is returned.
+    :param stats: TextStats object of the text to be cracked
+    :param dictionary: Dictionary constructed from the language of the plaintext
+    :param final_round: True to use bigrams and trigrams when evaluated. In cases where eg. a transposition cipher is
+     done after this substitution, it is better not to take bigrams and trigrams into account, and only use frequency
+    :param verbose: True to print some outputs, eg other candidates for plaintext
+    :return: solved text, cipher name ("rot", "affine", "flip"), parameters (shift, [a, a^(-1), b], _)
+    """
     solutions = []
+
+    # set coefficients to evaluate results
     if final_round:
         f = 1
         bi = 1
@@ -14,31 +26,34 @@ def crack_mono(stats: TextStats, dictionary: Dictionary, final_round: bool=True,
         bi = 0
         tri = 0
 
-    # rot/caesar
+    # try all possible rot/caesar shifts (0 is useless, so it is skipped)
     for shift in range(1, 26):
         solution = rot(stats.text, shift)
-        # print(solution)
         score = compute_score(solution, dictionary, f, bi, tri)
-        solutions.append((score, solution, "rot"+str(shift)))
+        solutions.append((score, solution, "rot", shift))
 
-    # flip (A=Z, B=Y...)
+    # try the flip cipher, it has no parameters so 0 is given instead
     solution = flip_substitution(stats.text)
     score = compute_score(solution, dictionary, f, bi, tri)
-    solutions.append((score, solution, "flip"))
+    solutions.append((score, solution, "flip", 0))
 
-    # affine ciphers
-    for a, a_inv in zip([1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25],[1, 9, 21, 15, 3, 19, 7, 23, 11, 5, 17, 25]):
+    # try affine ciphers
+    # coefficients for a and inverse of a were computed beforehand, since it was faster
+    for a, a_inv in zip([1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25], [1, 9, 21, 15, 3, 19, 7, 23, 11, 5, 17, 25]):
+        # try all 25 shifts as before
         for b in range(1, 26):
             solution = affine(stats.text, a_inv, b)
             score = compute_score(solution, dictionary, f, bi, tri)
-            solutions.append((score, solution, "affine"+str(a)+","+str(b)))
+            solutions.append((score, solution, "affine", [a, a_inv, b]))
 
-    solutions.sort(key=lambda solution: solution[0], reverse=True)
+    # sort solutions by their score
+    solutions.sort(key=lambda s: s[0], reverse=True)
     if verbose:
         for i in range(0, 10):
-            print(solutions[i][0], solutions[i][2], solutions[i][1])
+            print(solutions[i][0], solutions[i][2], solutions[i][3], solutions[i][1])
 
-    return solutions[0][1]
+    # return only the best one
+    return solutions[0][1], solutions[0][2], solutions[0][3]
 
 
 def rot(ciphertext: str, shift: int):
@@ -50,6 +65,7 @@ def rot(ciphertext: str, shift: int):
 
 
 def flip_substitution(ciphertext: str):
+    # A=Z, B=Y, C=X, D=W...
     plaintext = ""
     for c in ciphertext:
         letter_pos = ord(c) - 65
@@ -70,47 +86,6 @@ def shift_letter(c: str, shift: int):
     letter_pos = ord(c) - 65
     letter_pos = ((letter_pos + shift) % 26) + 65
     return chr(letter_pos)
-
-
-def brute_force(stats: TextStats, dictionary: Dictionary, f: int, bi: int, tri: int):
-    stats_ids = sorted(range(len(stats.frequency)), key=stats.frequency.__getitem__)
-    dict_ids = sorted(range(len(dictionary.frequency)), key=dictionary.frequency.__getitem__)
-
-    # align frequently used letters together
-    table = [-1] * 26
-    for i in range(0, 26):
-        table[stats_ids[i]] = dict_ids[i]
-
-    plaintext = use_table(stats.text, table)
-    score = compute_score(plaintext, dictionary, f, bi, tri)
-
-    stable = 0
-    while True:
-
-        i = random.randint(0, 25)
-        j = random.randint(0, 25)
-
-        if i == j:
-            continue
-
-        new_table = table.copy()
-        new_table[i] = table[j]
-        new_table[j] = table[i]
-
-        new_text = use_table(stats.text, new_table)
-        new_score = compute_score(new_text, dictionary, f, bi, tri)
-
-        if new_score > score:
-            print(new_text, new_score)
-            stable = 0
-            table = new_table
-            score = new_score
-        else:
-            stable += 1
-            if stable > 1000000:
-                break
-
-    return new_text
 
 
 def use_table(text: str, table: list):

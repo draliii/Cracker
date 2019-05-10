@@ -1,9 +1,53 @@
 import pickle as pkl
 import heapq
-from utils.text_analyzer import TextStats
+import random
+
+from crackers.mono import use_table
+from utils.text_analyzer import TextStats, compute_score
 from utils.dictionary import Dictionary
 from utils.text_analyzer import compute_score_for_table
 from copy import deepcopy
+
+
+def brute_force(stats: TextStats, dictionary: Dictionary, f: int, bi: int, tri: int):
+    stats_ids = sorted(range(len(stats.frequency)), key=stats.frequency.__getitem__)
+    dict_ids = sorted(range(len(dictionary.frequency)), key=dictionary.frequency.__getitem__)
+
+    # align frequently used letters together
+    table = [-1] * 26
+    for i in range(0, 26):
+        table[stats_ids[i]] = dict_ids[i]
+
+    plaintext = use_table(stats.text, table)
+    score = compute_score(plaintext, dictionary, f, bi, tri)
+
+    stable = 0
+    while True:
+
+        i = random.randint(0, 25)
+        j = random.randint(0, 25)
+
+        if i == j:
+            continue
+
+        new_table = table.copy()
+        new_table[i] = table[j]
+        new_table[j] = table[i]
+
+        new_text = use_table(stats.text, new_table)
+        new_score = compute_score(new_text, dictionary, f, bi, tri)
+
+        if new_score > score:
+            print(new_text, new_score)
+            stable = 0
+            table = new_table
+            score = new_score
+        else:
+            stable += 1
+            if stable > 1000000:
+                break
+
+    return new_text
 
 
 def frequency(stats: TextStats, dictionary: Dictionary):
