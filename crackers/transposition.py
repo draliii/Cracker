@@ -67,7 +67,6 @@ def crack_transposition_with_column_scrambling(stats: TextStats, dictionary: Dic
     :return: plaintext, cipher name ("transposition_table_shuffled"), parameters: [table height, permutation]
     """
     solutions = []
-    size = 2
     for size in range(2, stats.N):
         if not stats.N % size:
             n_cols = int(stats.N / size)
@@ -95,7 +94,7 @@ def crack_transposition_with_column_scrambling(stats: TextStats, dictionary: Dic
         for i in range(0, min(len(solutions), 50)):
             print(solutions[i][0], solutions[i][1], solutions[i][2], solutions[i][3])
 
-    return solutions[0][1], "transposition_table_shuffled", [size, solutions[0][3]]
+    return solutions[0][1], "transposition_table_shuffled", [solutions[0][2], solutions[0][3]]
 
 
 def generate_table(stats: TextStats, table_width: int):
