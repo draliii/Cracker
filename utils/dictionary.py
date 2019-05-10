@@ -3,7 +3,7 @@ import numpy as np
 
 
 class Dictionary:
-    def __init__(self, file):
+    def __init__(self, file: str):
         self.word_dict = {}
 
         with open(file) as f:
@@ -28,7 +28,7 @@ class Dictionary:
         pkl.dump(self, open(file, "wb"))
 
 
-def compute_ngrams(text, N=None):
+def compute_ngrams(text: str, N=None):
     text = text.replace(" ", "")
 
     if N is None:

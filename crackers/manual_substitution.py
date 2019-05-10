@@ -92,10 +92,10 @@ def solve_manually(stats: TextStats, dictionary: Dictionary):
     return new_stats.text
 
 
-def get_new_stats(stats: TextStats, password: list, last_stable_pos = None):
+def get_new_stats(stats: TextStats, password: list, last_stable_pos: int=-1):
     if len(password) == 0:
         return stats, "-", list(range(0, 26))
-    if last_stable_pos is None:
+    if last_stable_pos == -1:
         last_stable_pos = len(password)
     text = stats.text
     unused_letters = list(range(0, 26))
@@ -122,31 +122,17 @@ def get_new_stats(stats: TextStats, password: list, last_stable_pos = None):
     return new_stats, tmp_text, table
 
 
-def swap(a, b, text):
+def swap(a: str, b: str, text: str):
     text = text.replace(a, b.lower())
     text = text.replace(b, a)
     text = text.replace(b.lower(), b)
     return text
 
 
-def make_table(t1, t2):
+def make_table(t1: list, t2: list):
     table = [-1] * 26
     for c1, c2 in zip(t1, t2):
         l1 = ord(c1) - 65
         l2 = ord(c2) - 65
         table[l1] = l2
     return table
-
-
-def demo():
-    ciphertext = "RBLMRRMGELPQBMULQGMKLUFTGCMIJHMULTKBCQHCIURBMRQCRBLQMCURJHMPCIMWLPLAJCIARJFCVLCIRJWIILMPFJRQJSJRBLP" \
-                 "BJTQLQCIMBJTQLWBLPLWLGMIOLQMSLQJHLRCHLFMRLPRBLKJFCGLRJFUMFFRBLHLHOLPQJSRBLSMHCFYRBMRRBLYBMUTIGJVLPL" \
-                 "UHJPLKFJRQRBCQRCHLRJECUIMKACTFCMIMMIUFTGCMIJQQJIMFLQQMIUPJ"
-    dictionary = pkl.load(open("/home/dita/ownCloud/Soutěže/Cracker/utils/en.pkl", "rb"))
-
-    stats = TextStats(ciphertext)
-    solve_manually(stats, dictionary)
-
-
-if __name__ == "__main__":
-    demo()

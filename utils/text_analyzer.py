@@ -1,8 +1,8 @@
 import numpy as np
-from utils.dictionary import compute_ngrams
+from utils.dictionary import compute_ngrams, Dictionary
 
 
-def compute_score(text: str, dictionary, f=1, bi=1, tri=1):
+def compute_score(text: str, dictionary: Dictionary, f: int=1, bi: int=1, tri: int=1):
     stats = TextStats(text)
     f_score = 0
     bi_score = 0
@@ -18,7 +18,7 @@ def compute_score(text: str, dictionary, f=1, bi=1, tri=1):
     return f*f_score + bi*bi_score + tri*tri_score
 
 
-def compute_score_for_table(table: list, ciphertext: str, dictionary, f=1, bi=1, tri=1):
+def compute_score_for_table(table: list, ciphertext: str, dictionary: Dictionary, f: int=1, bi: int=1, tri: int=1):
     text = ""
     for c in ciphertext:
         text += chr(table[ord(c) - 65] + 65)
@@ -35,7 +35,7 @@ class TextStats():
         self.trigram_keys = compute_ngrams(self.text, self.N)
 
 
-def add_spaces(text):
+def add_spaces(text: str):
     result = ""
     lst = list(text)
     for i in range(0, len(lst)):
@@ -43,10 +43,3 @@ def add_spaces(text):
             result += " "
         result += lst[i]
     return result
-
-
-if __name__ == "__main__":
-    text = "QPWKALVRXCQZIKGRBPFAEOMFLJMSDZVDHXCXJYEBIMTRQWNMEAIZRVKCVKVLXNEICFZPZCZZHKMLVZVZIZRRQWDKECH"
-    stats = TextStats(text)
-    print(stats.ic)
-

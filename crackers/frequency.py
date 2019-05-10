@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import pickle as pkl
 import heapq
 from utils.text_analyzer import TextStats
@@ -38,7 +37,6 @@ def frequency(stats: TextStats, dictionary: Dictionary):
                 print(s, text)
 
 
-
 def make_basic_table(stats: TextStats, dictionary: Dictionary):
     dict_letters = []
     text_letters = []
@@ -54,7 +52,7 @@ def make_basic_table(stats: TextStats, dictionary: Dictionary):
     return table
 
 
-def get_table_id(table):
+def get_table_id(table: list):
     table_id = 0
     for i in range(0, 26):
         table_id += table[i] * pow(26, i)
@@ -65,7 +63,6 @@ def demo():
     ciphertext = "RBLMRRMGELPQBMULQGMKLUFTGCMIJHMULTKBCQHCIURBMRQCRBLQMCURJHMPCIMWLPLAJCIARJFCVLCIRJWIILMPFJRQJSJRBLP" \
                  "BJTQLQCIMBJTQLWBLPLWLGMIOLQMSLQJHLRCHLFMRLPRBLKJFCGLRJFUMFFRBLHLHOLPQJSRBLSMHCFYRBMRRBLYBMUTIGJVLPL" \
                  "UHJPLKFJRQRBCQRCHLRJECUIMKACTFCMIMMIUFTGCMIJQQJIMFLQQMIUPJ"
-
 
     dictionary = pkl.load(open("/home/dita/ownCloud/Soutěže/Cracker/utils/en.pkl", "rb"))
 

@@ -64,23 +64,3 @@ def crack_vigenere(stats: TextStats, dictionary: Dictionary, n_best: int=3, key_
 
     output_texts.sort(key=lambda c: c[0], reverse=True)
     return output_texts[0]
-
-
-def demo():
-
-    ciphertext = "FHMXYIEXARWGKSLFYXMEXUXEDIEBGRRAXXNSEDWFQRLXFVRHAEIELFVPVXZVHGAIESJKMKXRGGFRGKETXNZVVIZXRKXUXCYEQPM" \
-                 "KLOXRVXGHRUMQGSKKVOIKLRFIESHZLCITTPGVBMITXVHRRPEXEUCUBXSCNYECPVGXYIITPLIBYXYIQHPCEEMLVCOXKRRGHGFQCE" \
-                 "EZRGAEKFRGIKXBGARWNEPFAVGKEIJLXFVRLXFSCXRFRYREWIJUPFGXLENELYVFQRQMJXVGKFRR"
-    ciphertext = "ABCVTBAWHDAXJQGOENKRAUOIZUSRDYENMHTTZAZXHUBLFVHFGRJIJTGFTSLVGUFDZCNGWMQVUGUSZTATBGMAJYENEZKHOOHERID" \
-                 "YKSHFFWLMUXGMXKTUXMDTHNRQHDPVRQBBMGFCBFDMCFEKMFMDYDVGODNAOFVOZXSIXXRFWLSBNBPDMTUBGTTOAQASMGKOSUSZTA" \
-                 "TBGOZSAOYWTUDYUPVWIWHTUXHTDBGUMCRIOEPHABPUY"
-
-    dictionary = pkl.load(open("/home/dita/ownCloud/Soutěže/Cracker/utils/en.pkl", "rb"))
-
-    stats = TextStats(ciphertext)
-    crack_vigenere(stats, dictionary)
-    pass
-
-
-if __name__ == "__main__":
-    demo()

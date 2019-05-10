@@ -4,7 +4,7 @@ from crackers.mono import crack_mono
 from utils.dictionary import Dictionary
 
 
-def identify_ciphers(stats, dictionary):
+def identify_ciphers(stats: TextStats, dictionary: Dictionary):
     print("IC of ciphertext is " + str(stats.ic) + " , IC of dictionary is " + str(dictionary.ic))
     if (abs(stats.ic - dictionary.ic)) < 0.4:
         print("Monoalphabetic substitution was likely used")
@@ -13,7 +13,7 @@ def identify_ciphers(stats, dictionary):
         print("Monoalphabetic substitution was not used")
 
 
-if __name__ == "__main__":
+def run():
     texts = ["TYOAK XMCLM LKDUT MCSDD MCXUB SDHMF CKFDK WKAXK UJLSW KJSUM BSXSD OKTTJ LSBMT AOSLS ULMYJ SDJMI KFAXK"
              "CLMFS KOLSD HMFJL SOKFJ STSBL MXS",
 
@@ -51,3 +51,7 @@ if __name__ == "__main__":
         stats = TextStats(ciphertext)
 
         identify_ciphers(stats, dicts[1])
+
+
+if __name__ == "__main__":
+    run()

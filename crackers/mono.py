@@ -1,8 +1,9 @@
-from utils.text_analyzer import compute_score
+from utils.dictionary import Dictionary
+from utils.text_analyzer import compute_score, TextStats
 import random
 
 
-def crack_mono(stats, dictionary, final_round=True, verbose=False):
+def crack_mono(stats: TextStats, dictionary: Dictionary, final_round: bool=True, verbose: bool=False):
     solutions = []
     if final_round:
         f = 1
@@ -40,7 +41,7 @@ def crack_mono(stats, dictionary, final_round=True, verbose=False):
     return solutions[0][1]
 
 
-def rot(ciphertext, shift):
+def rot(ciphertext: str, shift: int):
     plaintext = ""
     for c in ciphertext:
         cl = shift_letter(c, shift)
@@ -48,16 +49,16 @@ def rot(ciphertext, shift):
     return plaintext
 
 
-def flip_substitution(cyphertext):
+def flip_substitution(ciphertext: str):
     plaintext = ""
-    for c in cyphertext:
+    for c in ciphertext:
         letter_pos = ord(c) - 65
         letter_pos = abs(letter_pos - 25) + 65
         plaintext += chr(letter_pos)
     return plaintext
 
 
-def affine(ciphertext, a_inv, b):
+def affine(ciphertext: str, a_inv: int, b: int):
     plaintext = ""
     for c in ciphertext:
         cl = chr((a_inv*(ord(c)-65-b) % 26) + 65)
@@ -65,13 +66,13 @@ def affine(ciphertext, a_inv, b):
     return plaintext
 
 
-def shift_letter(c, shift):
+def shift_letter(c: str, shift: int):
     letter_pos = ord(c) - 65
     letter_pos = ((letter_pos + shift) % 26) + 65
     return chr(letter_pos)
 
 
-def brute_force(stats, dictionary, f, bi, tri):
+def brute_force(stats: TextStats, dictionary: Dictionary, f: int, bi: int, tri: int):
     stats_ids = sorted(range(len(stats.frequency)), key=stats.frequency.__getitem__)
     dict_ids = sorted(range(len(dictionary.frequency)), key=dictionary.frequency.__getitem__)
 
@@ -112,10 +113,9 @@ def brute_force(stats, dictionary, f, bi, tri):
     return new_text
 
 
-def use_table(text, table):
+def use_table(text: str, table: list):
     plaintext = ""
     for c in text:
         letter_pos = ord(c) - 65
         plaintext += chr(table[letter_pos] + 65)
     return plaintext
-

@@ -8,7 +8,7 @@ import pickle as pkl
 from utils.text_analyzer import TextStats
 
 
-def demo1(dictionary):
+def demo1(dictionary: Dictionary):
     ciphertext = "TYOAK XMCLM LKDUT MCSDD MCXUB SDHMF CKFDK WKAXK UJLSW KJSUM BSXSD OKTTJ LSBMT AOSLS ULMYJ SDJMI" \
                  "KFAXK CLMFS KOLSD HMFJL SOKFJ STSBL MXS"
     stats = TextStats(ciphertext)
@@ -17,7 +17,7 @@ def demo1(dictionary):
     return plaintext
 
 
-def demo2(dictionary):
+def demo2(dictionary: Dictionary):
     ciphertext = "RBLMR RMGEL PQBMU LQGMK LUFTG CMIJH MULTK BCQHC IURBM RQCRB LQMCU RJHMC IMWLP LAJCI ARJFC VLCIR" \
                  "JWIIL MPFJR QJSJR BLPBJ TQLQC IMBJT QLWBL PLWLG MIOLQ MSLQJ HLRCH LFMRL PRBLK JFCGL RJFUM FFRBL" \
                  "HLHOL PQJSR BLSMH CFYRB MRRBL YBMUT IGJVL PLUHJ PLKFJ RQRBC QRCHL RJECU IMKAC TFCMI MMIUF TGCMI" \
@@ -28,7 +28,7 @@ def demo2(dictionary):
     return plaintext
 
 
-def demo3(dictionary):
+def demo3(dictionary: Dictionary):
     ciphertext = "ABCVT BAWHD AXJQG OENKR AUOIZ USRDY ENMHT TZAZX HUBLF VHFGR JIJTG FTSLV GUFDZ CNGWM QVUGU SZTAT" \
                  "BGMAJ YENEZ KHOOH ERIDY KSHFF WLMUX GMXKT UXMDT HNRQH DPVRQ BBMGF CBFDM CFEKM FMDYD VGODN AOFVO" \
                  "ZXSIX XRFWL SBNBP DMTUB GTTOA QASMG KOSUS ZTATB GOZSA OYWTU DYUPV WIWHT UXHTD BGUMC RIOEP HABPU Y"
@@ -38,7 +38,7 @@ def demo3(dictionary):
     return plaintext
 
 
-def demo4(dictionary):
+def demo4(dictionary: Dictionary):
     ciphertext = "ACRVN EHEHO AEHRO NNREX LUORI MSDTF FRREI ARESX ASCKA ODOSE RSTEY NDEYR SFIEL CBEPC NHAWF AUAVI" \
                  "LRWOT BANTI NNEVH EEVYS WIHDE LASRA IIIAA BNTEO EOEFN UTAIL AOLSS LDHRU"
     stats = TextStats(ciphertext)
@@ -47,7 +47,7 @@ def demo4(dictionary):
     return plaintext
 
 
-def demo5(dictionary):
+def demo5(dictionary: Dictionary):
     ciphertext = "GLIAX QKERP VYLIJ CIILW IPIRE JVSHV XIXSW MTMEV WMLRX RIXXJ ROXGI SSPRI IXGGE EQVRC GHVLL MXEEQ" \
                  "AEIWJ EMXIP VSEXM XMZWC WXOYW MREZI IYSLI WWRXX IRRRJ SXFXC LIXYI MEYAI MTIW"
     stats = TextStats(ciphertext)
@@ -59,7 +59,7 @@ def demo5(dictionary):
     return plaintext
 
 
-def demo6(dictionary):
+def demo6(dictionary: Dictionary):
     ciphertext = "GGJSS YWMYY MFMPF NFYVJ EJOYM VJNEM VMYQR ETVWY IWEKG KMRPE EXVGI YTKJV VFJFJ VYRVK YPYUW LJYPY" \
                  "JQRXV WEEXX EEMJE IEKMQ VGEXK XMRMI PLXFV VVXOM XJUTN WJELJ ENJAG VYAMI EWRTJ IGARV JEEEJ XVMOV" \
                  "LVQVA GWOJF GFSGW RYGVJ VX"
@@ -72,7 +72,7 @@ def demo6(dictionary):
     return plaintext
 
 
-def demo7(dictionary):
+def demo7(dictionary: Dictionary):
     ciphertext = "HHIEE TWSTF DETER SKKTO JNGZN UGXOJ UKSWH GHEST EUNES TUXMP QVQJS WZZLX QPVXR BFZFR APJFG YAVQR" \
                  "MLHEA NOOET WAGST NKKKJ IKCGY UKTCS NYDBA ITTNS TRNNH OEIBC LIQBN BQMBM QDEDB FGEIB ENAFL QPRBR" \
                  "HIHEI NONJO MAHMR XUTKV ZTSJG VUJNK RXLEF OIACF PERVE NDXLA WZMUW CIVMM TBEXG FEGFR NEARJ ECNNX"
@@ -94,7 +94,6 @@ def demo():
     print(demo5(dictionary))
     print(demo6(dictionary))
     print(demo7(dictionary))
-
 
 
 if __name__ == "__main__":

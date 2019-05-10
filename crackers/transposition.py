@@ -1,12 +1,11 @@
 import numpy as np
-import pickle as pkl
 from utils.text_analyzer import TextStats
 from utils.text_analyzer import compute_score
 from utils.dictionary import Dictionary
 from itertools import permutations as permutations
 
 
-def crack_transposition(stats: TextStats, dictionary, verbose: bool=False):
+def crack_transposition(stats: TextStats, dictionary: Dictionary, verbose: bool=False):
     solutions = []
 
     """
@@ -32,7 +31,7 @@ def crack_transposition(stats: TextStats, dictionary, verbose: bool=False):
     return solutions[0][2]
 
 
-def read_from_table(stats: TextStats, table_width):
+def read_from_table(stats: TextStats, table_width: int):
     m = int(stats.N/table_width)
     f = np.array(list(stats.text))
     cipher_table = np.transpose(np.reshape(f, (m, table_width)))
@@ -40,7 +39,7 @@ def read_from_table(stats: TextStats, table_width):
     return "".join(table[0])
 
 
-def crack_transposition_with_column_scrambling(stats: TextStats, dictionary, verbose: bool=False):
+def crack_transposition_with_column_scrambling(stats: TextStats, dictionary: Dictionary, verbose: bool=False):
     solutions = []
 
     for size in range(2, stats.N):
@@ -70,14 +69,14 @@ def crack_transposition_with_column_scrambling(stats: TextStats, dictionary, ver
     return solutions[0][1]
 
 
-def generate_table(stats: TextStats, table_width):
+def generate_table(stats: TextStats, table_width: int):
     m = int(stats.N/table_width)
     f = np.array(list(stats.text))
     cipher_table = np.transpose(np.reshape(f, (m, table_width)))
     return cipher_table
 
 
-def guess_table_size(text: TextStats, filler:int="X"):
+def guess_table_size(text: TextStats, filler: int="X"):
     """
     Finds how often filler characters appear. This can be used to detect table size
     :param text: ciphertext
@@ -115,32 +114,3 @@ def count_tailing_letters(text: str):
         if text[-i] != last_char:
             break
     return i-1
-
-
-if __name__ == "__main__":
-    ciphertext = "HHIEETWSTFDETERSKKTOJNGZNUGXOJUKSWHGHESTEUNESTUXMPQVQJSWZZLXQPVXRBFZFRAPJFGYAVQRMLHEANOOETWAGSTNKKK" \
-                 "JIKCGYUKTCSNYDBAITTNSTRNNHOEIBCLIQBNBQMBMQDEDBFGEIBENAFLQPRBRHIHEINONJOMAHMRXUTKVZTSJGVUJNKRXLEFOIA" \
-                 "CFPERVENDXLAWZMUWCIVMMTBEXGFEGFRNEARJECNNX"
-    ciphertext = "GLIAXQKERPVYLIJCIILWIPIREJVSHVXIXSWMTMEVWMLRXRIXXJROXGISSPRIIXGGEEQVRCGHVLLMXEEQAEIWJEMXIPVSEXMXMZW" \
-                 "CWXOYWMREZIIYSLIWWRXXIRRRJSXFXCLIXYIMEYAIMTIW"
-    ciphertexts = ["ABCVTBAWHDAXJQGOENKRAUOIZUSRDYENMHTTZAZXHUBLFVHFGRJIJTGFTSLVGUFDZCNGWMQVUGUSZTATBGMAJYENEZKHOOHERIDYKSHFF"
-             "WLMUXGMXKTUXMDTHNRQHDPVRQBBMGFCBFDMCFEKMFMDYDVGODNAOFVOZXSIXXRFWLSBNBPDMTUBGTTOAQASMGKOSUSZTATBGOZSAOYWTU"
-             "DYUPVWIWHTUXHTDBGUMCRIOEPHABPUY",
-             "ACRVNEHEHOAEHRONNREXLUORIMSDTFFRREIARESXASCKAODOSERSTEYNDEYRSFIELCBEPCNHAWFAUAVILRWOTBANTINNEVHEEVYSWIHDE"
-             "LASRAIIIAABNTEOEOEFNUTAILAOLSSLDHRU",
-             "GLIAXQKERPVYLIJCIILWIPIREJVSHVXIXSWMTMEVWMLRXRIXXJROXGISSPRIIXGGEEQVRCGHVLLMXEEQAEIWJEMXIPVSEXMXMZWCWXOYW"
-             "MREZIIYSLIWWRXXIRRRJSXFXCLIXYIMEYAIMTIW",
-             "GGJSSYWMYYMFMPFNFYVJEJOYMVJNEMVMYQRETVWYIWEKGKMRPEEXVGIYTKJVVFJFJVYRVKYPYUWLJYPYJQRXVWEEXXEEMJEIEKMQVGEXK"
-             "XMRMIPLXFVVVXOMXJUTNWJELJENJAGVYAMIEWRTJIGARVJEEEJXVMOVLVQVAGWOJFGFSGWRYGVJVX",
-             "HHIEETWSTFDETERSKKTOJNGZNUGXOJUKSWHGHESTEUNESTUXMPQVQJSWZZLXQPVXRBFZFRAPJFGYAVQRMLHEANOOETWAGSTNKKKJIKCGY"
-             "UKTCSNYDBAITTNSTRNNHOEIBCLIQBNBQMBMQDEDBFGEIBENAFLQPRBRHIHEINONJOMAHMRXUTKVZTSJGVUJNKRXLEFOIACFPERVENDXLA"
-             "WZMUWCIVMMTBEXGFEGFRNEARJECNNX"]
-
-    dict = pkl.load(open("/home/dita/ownCloud/Soutěže/Cracker/utils/en.pkl", "rb"))
-
-    for t in ciphertexts:
-        print()
-        print(t)
-        stats = TextStats(t)
-        crack_transposition(stats, dict)
-
