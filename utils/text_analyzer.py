@@ -43,3 +43,19 @@ def add_spaces(text: str):
             result += " "
         result += lst[i]
     return result
+
+
+def swap(a: str, b: str, text: str):
+    text = text.replace(a, b.lower())
+    text = text.replace(b, a)
+    text = text.replace(b.lower(), b)
+    return text
+
+
+def make_table(t1: list, t2: list):
+    table = [-1] * 26
+    for c1, c2 in zip(t1, t2):
+        l1 = ord(c1) - 65
+        l2 = ord(c2) - 65
+        table[l1] = l2
+    return table
